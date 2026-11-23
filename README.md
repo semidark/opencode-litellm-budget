@@ -6,7 +6,7 @@ The key's spend can include other sessions and applications, may lag, and is not
 
 ## Installation
 
-Requires OpenCode V2. The original local implementation was tested for loading on 2.2.7. **The standalone Git package has not yet been verified:** installation currently fails against the development registry because a required OpenCode SDK dependency is unavailable. Desktop compatibility also needs verification. Once resolved, add the following to `plugins` in your global `opencode.json(c)`, preserving existing entries:
+Requires OpenCode V2. The original local implementation was tested for loading on 2.2.7. The TUI is distributed as precompiled Solid/OpenTUI JavaScript to avoid runtime JSX compilation differences. Desktop compatibility still needs verification. Add the following to `plugins` in your global `opencode.json(c)`, preserving existing entries:
 
 ```jsonc
 {
@@ -29,6 +29,6 @@ Values refresh approximately once a minute while a client is open. Requests are 
 
 ## Development
 
-Run `bun install` and `bun test`. The Desktop entry is a standalone CommonJS file using host-provided modules; its RPC contract is duplicated and must stay in sync with `rpc.ts`. See [OpenCode plugin documentation](https://opencode.ai/docs/build/plugins). No npm release is implied by the GitHub repository.
+Run `bun install` and `bun run test`. Build the TUI with `bun run build:tui` and commit `dist/tui.js` when its source changes. The build script deliberately avoids npm Git-preparation lifecycle names. Tests import the packed TUI outside the checkout. The Desktop entry is a standalone CommonJS file using host-provided modules; its RPC contract is duplicated and must stay in sync with `rpc.ts`. See [OpenCode plugin documentation](https://opencode.ai/docs/build/plugins). No npm release is implied by the GitHub repository.
 
 MIT licensed; see [LICENSE](LICENSE).

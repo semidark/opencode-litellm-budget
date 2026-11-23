@@ -6,11 +6,33 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./tui": "./tui.tsx",
+    "./tui": "./dist/tui.js",
     "./gui-experimental": "./gui-experimental.cjs",
     "./rpc": "./rpc.ts"
   },
-  "files": ["index.ts", "tui.tsx", "rpc.ts", "service.ts", "display.ts", "gui-experimental.cjs"],
-  "scripts": { "test": "bun test" },
-  "dependencies": { "@opencode/plugin": "2.2.5", "solid-js": "^1.9.0" }
+  "files": [
+    "index.ts",
+    "rpc.ts",
+    "service.ts",
+    "display.ts",
+    "gui-experimental.cjs",
+    "dist/tui.js"
+  ],
+  "scripts": {
+    "build:tui": "bun run build.ts",
+    "test": "bun run build:tui && bun test"
+  },
+  "dependencies": {
+    "@opencode/plugin": "2.2.5",
+    "solid-js": "^1.9.0"
+  },
+  "devDependencies": {
+    "@opentui/core": "^0.9.7",
+    "@opentui/solid": "^0.9.7"
+  },
+  "peerDependencies": {
+    "@opentui/core": ">=0.8.0",
+    "@opentui/solid": ">=0.8.0",
+    "solid-js": ">=1.9.0"
+  }
 }

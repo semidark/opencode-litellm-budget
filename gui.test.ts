@@ -1,4 +1,6 @@
-import { expect, mock, test } from "bun:test"
+import { expect, test } from "bun:test"
+import { readFileSync } from "node:fs"
+import { runInNewContext } from "node:vm"
 
 test("Desktop ignores late refreshes after switching sessions", async () => {
   const effects: (() => void)[] = []
@@ -6,17 +8,22 @@ test("Desktop ignores late refreshes after switching sessions", async () => {
   let view: any
   let session: any = { id: "first", directory: "/first", server: { id: "local", builtin: true } }
   const requests: { directory: string; resolve: (value: any) => void }[] = []
-  mock.module("solid-js", () => ({
+  const solid = {
     createSignal(initial: any) {
       let value = initial
       return [() => value, (next: any) => { value = typeof next === "function" ? next(value) : next }]
     },
     createEffect(fn: () => void) { effects.push(fn); fn() },
     onCleanup(fn: () => void) { cleanup = fn },
-  }))
-  mock.module("@opencode/plugin/gui", () => ({ Plugin: { define: (value: any) => value }, Slot: {} }))
-  mock.module("@opencode/plugin/rpc", () => ({ Rpc: { define: (value: any) => value } }))
-  const plugin = require("./gui-experimental.cjs").default
+  }
+  const module = { exports: {} as any }
+  runInNewContext(readFileSync(import.meta.dir + "/gui-experimental.cjs", "utf8"), {
+    module,
+    get document() { return globalThis.document },
+    setInterval, clearInterval,
+    require: (name: string) => name === "solid-js" ? solid : name === "@opencode/plugin/rpc" ? { Rpc: { define: (v: any) => v } } : { Plugin: { define: (v: any) => v }, Slot: {} },
+  })
+  const plugin = module.exports.default
   let dialog: any
   const ctx = {
     sessions: { current: () => session },
@@ -45,9 +52,9 @@ test("Desktop ignores late refreshes after switching sessions", async () => {
   expect(requests[2].directory).toBe("/second")
   const data = (spend: number) => ({ status: "fresh", error: null, budget: { spend, limit: 100, resetAt: null, period: null, updatedAt: 1 } })
   requests[2].resolve(data(25))
-  await Promise.resolve()
+  await new Promise((resolve) => setImmediate(resolve))
   requests[1].resolve(data(75))
-  await Promise.resolve()
+  await new Promise((resolve) => setImmediate(resolve))
   effects[1]()
   expect(text.textContent).toBe("Budget 25%")
   expect(svg.style.display).toBe("block")
@@ -61,14 +68,14 @@ test("Desktop ignores late refreshes after switching sessions", async () => {
     "Period", "Not reported", "Resets", "Not reported", "Updated", new Date(1).toLocaleString(),
   ])
   requests[3].resolve({ status: "stale", error: "unavailable", budget: { spend: 150, limit: 100, resetAt: null, period: null, updatedAt: 1 } })
-  await Promise.resolve()
+  await new Promise((resolve) => setImmediate(resolve))
   effects[1]()
   expect(text.textContent).toBe("Budget 150% · stale")
   expect(Number(progress.attributes["stroke-dashoffset"])).toBeCloseTo(0)
   button.onclick()
   expect(dialog.children.children[1].children.map((node: any) => node.textContent).slice(-2)).toEqual(["Last refresh", "unavailable"])
   requests[4].resolve({ status: "fresh", error: null, budget: { spend: 5, limit: null, resetAt: null, period: null, updatedAt: 1 } })
-  await Promise.resolve()
+  await new Promise((resolve) => setImmediate(resolve))
   effects[1]()
   expect(svg.style.display).toBe("none")
   expect(text.textContent).toContain("limit not reported")
