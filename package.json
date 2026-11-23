@@ -1,0 +1,16 @@
+{
+  "name": "opencode-litellm-budget",
+  "version": "0.1.0",
+  "description": "LiteLLM key budget indicator for OpenCode",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./tui": "./tui.tsx",
+    "./gui-experimental": "./gui-experimental.cjs",
+    "./rpc": "./rpc.ts"
+  },
+  "files": ["index.ts", "tui.tsx", "rpc.ts", "service.ts", "display.ts", "gui-experimental.cjs"],
+  "scripts": { "test": "bun test" },
+  "dependencies": { "@opencode/plugin": "2.2.5", "solid-js": "^1.9.0" }
+}
