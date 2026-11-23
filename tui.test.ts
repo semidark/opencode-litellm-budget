@@ -3,6 +3,46 @@ import { mkdtemp, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
+test("left-clicking the footer opens the same refreshed details as /budget", async () => {
+  const child = Bun.spawn([process.execPath, "-e", `
+    import plugin from "./dist/tui.js";
+    import { testRender } from "@opentui/solid";
+    let slot, command, close;
+    const dialogs = [];
+    let refreshes = 0;
+    const cleanup = plugin.setup({
+      theme: { text: { muted: "#555555" } },
+      client: { rpc: () => ({ get: async ({ refresh }) => {
+        if (refresh) refreshes++;
+        return { status: "fresh", budget: { spend: 25, limit: 100, resetAt: null, period: null, updatedAt: 1 }, error: null };
+      } }) },
+      data: { location: { default: () => ({ directory: "/test" }) } },
+      ui: {
+        slot: value => { slot = value; return () => {}; },
+        dialog: { alert: value => { dialogs.push(value); return new Promise(resolve => { close = resolve; }); } },
+      },
+      keymap: { layer: factory => { command = factory().commands[0]; } },
+    });
+    const test = await testRender(() => slot.render({}), { width: 60, height: 4 });
+    const flush = () => new Promise(resolve => setImmediate(resolve));
+    try {
+      await flush(); await test.renderOnce();
+      await test.mockMouse.click(2, 0, 2); await flush();
+      if (dialogs.length) throw new Error("Right-click opened a dialog");
+      await test.mockMouse.click(2, 0, 0); await flush();
+      if (dialogs.length !== 1 || refreshes !== 1 || dialogs[0].title !== "Budget") throw new Error("Click did not refresh and open details");
+      await test.mockMouse.click(2, 0, 0); await flush();
+      if (dialogs.length !== 1) throw new Error("Duplicate dialog opened");
+      close(); await flush();
+      const run = command.run(); await flush();
+      if (dialogs.length !== 2 || refreshes !== 2 || dialogs[0].message !== dialogs[1].message) throw new Error("Command and click differ");
+      close(); await run;
+    } finally { cleanup(); test.renderer.destroy(); }
+  `], { cwd: import.meta.dir, stdout: "pipe", stderr: "pipe" })
+  const error = await new Response(child.stderr).text()
+  expect(await child.exited, error).toBe(0)
+})
+
 test("budget footer uses the host theme instead of invisible white text on light backgrounds", async () => {
   const child = Bun.spawn([process.execPath, "-e", `
     import plugin from "./dist/tui.js";
