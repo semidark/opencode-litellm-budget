@@ -21,7 +21,7 @@ export default Plugin.define({
     }
     void refresh()
     const timer = setInterval(() => void refresh(), 60_000)
-    const unregister = ctx.ui.slot({ append: "prompt.footer.status", render: () => <text>{summary(snapshot())}</text> })
+    const unregister = ctx.ui.slot({ append: "prompt.footer.status", render: () => <text fg={ctx.theme.text.muted}>{summary(snapshot())}</text> })
     ctx.keymap.layer(() => ({
       mode: "global",
       commands: [{

@@ -3,6 +3,31 @@ import { mkdtemp, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
+test("budget footer uses the host theme instead of invisible white text on light backgrounds", async () => {
+  const child = Bun.spawn([process.execPath, "-e", `
+    import plugin from "./dist/tui.js";
+    import { testRender } from "@opentui/solid";
+    let slot;
+    const cleanup = plugin.setup({
+      theme: { text: { muted: "#555555" } },
+      client: { rpc: () => ({ get: async () => ({ status: "fresh", budget: { spend: 25, limit: 100 }, error: null }) }) },
+      data: { location: { default: () => ({ directory: "/test" }) } },
+      ui: { slot: value => { slot = value; return () => {}; } },
+      keymap: { layer: () => {} },
+    });
+    const renderer = await testRender(() => slot.render({}), { width: 60, height: 4 });
+    try {
+      await new Promise(resolve => setImmediate(resolve));
+      await renderer.renderOnce();
+      const span = renderer.captureSpans().lines[0].spans.find(span => span.text.includes("Budget:"));
+      if (!renderer.captureCharFrame().includes("Budget: 25% used")) throw new Error("Missing budget text");
+      if (!span || span.fg.buffer[0] !== 85 || span.fg.buffer[1] !== 85 || span.fg.buffer[2] !== 85) throw new Error("Host theme colour not applied");
+    } finally { cleanup(); renderer.renderer.destroy(); }
+  `], { cwd: import.meta.dir, stdout: "pipe", stderr: "pipe" })
+  const error = await new Response(child.stderr).text()
+  expect(await child.exited, error).toBe(0)
+})
+
 test("Git consumers install the committed artifact without dependency preparation", async () => {
   const manifest = await Bun.file(join(import.meta.dir, "package.json")).json()
   for (const name of ["build", "prepare", "prepack", "preinstall", "install", "postinstall"]) {

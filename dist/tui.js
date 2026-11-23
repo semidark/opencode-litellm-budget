@@ -1,5 +1,7 @@
 // @bun
 // tui.tsx
+import { setProp as _$setProp } from "@opentui/solid";
+import { effect as _$effect } from "@opentui/solid";
 import { insert as _$insert } from "@opentui/solid";
 import { createElement as _$createElement } from "@opentui/solid";
 import { Plugin } from "@opencode/plugin/tui";
@@ -93,6 +95,7 @@ var tui_default = Plugin.define({
       render: () => (() => {
         var _el$ = _$createElement("text");
         _$insert(_el$, () => summary(snapshot()));
+        _$effect((_$p) => _$setProp(_el$, "fg", ctx.theme.text.muted, _$p));
         return _el$;
       })()
     });
