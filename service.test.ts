@@ -9,6 +9,12 @@ const body = { info: { spend: 12.5, max_budget: 50, budget_reset_at: "2026-12-01
 
 const options = { providerID: "gateway", keyInfoURL: "https://gateway.example/key/info" }
 describe("LiteLLM budget", () => {
+  test("accepts AIHub decimal strings without accepting arbitrary numeric coercions", () => {
+    expect(parseBudget({ info: { spend: "12.50", max_budget: "50.00" } }, 1)).toEqual({ spend: 12.5, limit: 50, resetAt: null, period: null, updatedAt: 1 })
+    for (const spend of ["", " ", "-1", "Infinity", "0x10", "1e3", "12 dollars"]) {
+      expect(() => parseBudget({ info: { spend } }, 1)).toThrow()
+    }
+  })
   test("allowlists valid fields and rejects invalid data", () => {
     const budget = parseBudget(body, 123)
     expect(budget).toEqual({ spend: 12.5, limit: 50, resetAt: "2026-12-01T00:00:00.000Z", period: "30d", updatedAt: 123 })

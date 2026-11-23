@@ -17,6 +17,7 @@ const MIN_REFRESH = 5_000
 const TIMEOUT = 10_000
 
 function number(value: unknown): number | null {
+  if (typeof value === "string" && /^\d+(?:\.\d+)?$/.test(value)) value = Number(value)
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null
 }
 
