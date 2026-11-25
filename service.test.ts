@@ -81,7 +81,7 @@ describe("LiteLLM budget", () => {
   test("shows unlimited, zero and overspent correctly", () => {
     const budget = parseBudget(body, 1)
     expect(summary({ status: "fresh", error: null, budget })).toContain("25%")
-    expect(summary({ status: "fresh", error: null, budget: { ...budget, limit: null } })).toContain("limit not reported")
+    expect(summary({ status: "fresh", error: null, budget: { ...budget, limit: null } })).toContain("limit unknown")
     expect(summary({ status: "fresh", error: null, budget: { ...budget, limit: 0 } })).toContain("/ 0.00")
     expect(details({ status: "stale", error: "Gateway unavailable", budget: { ...budget, limit: 10 } })).toContain("-2.50")
   })

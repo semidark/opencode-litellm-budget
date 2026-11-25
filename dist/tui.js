@@ -41,10 +41,10 @@ var BudgetRPC = Rpc.define({
 var amount = (n) => new Intl.NumberFormat(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 function summary(snapshot) {
   if (!snapshot || !snapshot.budget)
-    return "Budget: unavailable";
+    return "Bgt: unavailable";
   const { spend, limit } = snapshot.budget;
-  const value = limit === null ? `${amount(spend)} used (limit not reported)` : limit === 0 ? `${amount(spend)} / 0.00` : `${Math.round(spend / limit * 100)}% used`;
-  return `Budget: ${value}${snapshot.status === "stale" ? " \xB7 stale" : ""}`;
+  const value = limit === null ? `${amount(spend)} used (limit unknown)` : limit === 0 ? `${amount(spend)} / 0.00` : `${Math.round(spend / limit * 100)}%`;
+  return `Bgt: ${value}${snapshot.status === "stale" ? " \xB7 stale" : ""}`;
 }
 function details(snapshot) {
   if (!snapshot?.budget)

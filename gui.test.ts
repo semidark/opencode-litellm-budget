@@ -39,7 +39,11 @@ test("Desktop ignores late refreshes after switching sessions", async () => {
   globalThis.document = { createElement: element, createElementNS: element } as any
   const input = { get session() { return session }, active: true }
   const button = view.render(input)
-  const [svg, text] = button.children
+  const [separator, svg, text, trailingSeparator] = button.children
+  expect(separator.textContent).toBe("·")
+  expect(separator.attributes["aria-hidden"]).toBe("true")
+  expect(trailingSeparator.textContent).toBe("·")
+  expect(trailingSeparator.attributes["aria-hidden"]).toBe("true")
   const progress = svg.children[1]
   expect(svg.style.display).toBe("none")
   expect(requests[0].directory).toBe("/first")

@@ -2,10 +2,10 @@ import type { Snapshot } from "./service"
 
 const amount = (n: number) => new Intl.NumberFormat(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
 export function summary(snapshot: Snapshot | undefined): string {
-  if (!snapshot || !snapshot.budget) return "Budget: unavailable"
+  if (!snapshot || !snapshot.budget) return "Bgt: unavailable"
   const { spend, limit } = snapshot.budget
-  const value = limit === null ? `${amount(spend)} used (limit not reported)` : limit === 0 ? `${amount(spend)} / 0.00` : `${Math.round(spend / limit * 100)}% used`
-  return `Budget: ${value}${snapshot.status === "stale" ? " · stale" : ""}`
+  const value = limit === null ? `${amount(spend)} used (limit unknown)` : limit === 0 ? `${amount(spend)} / 0.00` : `${Math.round(spend / limit * 100)}%`
+  return `Bgt: ${value}${snapshot.status === "stale" ? " · stale" : ""}`
 }
 export function details(snapshot: Snapshot | undefined): string {
   if (!snapshot?.budget) return `API key budget\nUnavailable${snapshot?.error ? `: ${snapshot.error}` : ""}`

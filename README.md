@@ -1,6 +1,6 @@
 # OpenCode LiteLLM budget
 
-An OpenCode V2 plugin showing a LiteLLM **key** budget in the terminal footer. `/budget` refreshes and opens details. A Desktop session-header indicator is included but experimental and has not been verified in a real Desktop app. Browser-only web clients do not load the Desktop entry.
+An OpenCode V2 plugin showing a LiteLLM **key** budget in the terminal footer (for example, `Bgt: 20%`). Stale and unavailable values are labelled. `/budget` refreshes and opens details. A Desktop session-header indicator is included but experimental and has not been verified in a real Desktop app. Browser-only web clients do not load the Desktop entry.
 
 The key's spend can include other sessions and applications, may lag, and is not necessarily denominated in any particular currency. This is not a spending limit and the plugin cannot enforce one.
 

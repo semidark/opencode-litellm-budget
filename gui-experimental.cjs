@@ -78,6 +78,9 @@ module.exports = { default: Plugin.define({
         const button = document.createElement("button")
         button.type = "button"
         button.className = "text-12-regular text-text-weak whitespace-nowrap cursor-pointer inline-flex items-center gap-1"
+        const separator = document.createElement("span")
+        separator.textContent = "·"
+        separator.setAttribute("aria-hidden", "true")
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
         svg.setAttribute("width", "14")
         svg.setAttribute("height", "14")
@@ -96,7 +99,10 @@ module.exports = { default: Plugin.define({
         progress.setAttribute("stroke-dasharray", String(circumference))
         svg.append(track, progress)
         const text = document.createElement("span")
-        button.append(svg, text)
+        const trailingSeparator = document.createElement("span")
+        trailingSeparator.textContent = "·"
+        trailingSeparator.setAttribute("aria-hidden", "true")
+        button.append(separator, svg, text, trailingSeparator)
         createEffect(() => {
           const session = input.session
           const current = ctx.sessions.current()
