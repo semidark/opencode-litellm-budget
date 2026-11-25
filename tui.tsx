@@ -38,7 +38,7 @@ export default Plugin.define({
         if (event.button !== 0) return
         event.stopPropagation()
         void showDetails()
-      }}>{summary(snapshot())}</text>,
+      }}>{"· "}{summary(snapshot())}</text>,
     })
     ctx.keymap.layer(() => ({
       mode: "global",

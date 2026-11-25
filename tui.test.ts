@@ -60,7 +60,7 @@ test("budget footer uses the host theme instead of invisible white text on light
       await new Promise(resolve => setImmediate(resolve));
       await renderer.renderOnce();
       const span = renderer.captureSpans().lines[0].spans.find(span => span.text.includes("Budget:"));
-      if (!renderer.captureCharFrame().includes("Budget: 25% used")) throw new Error("Missing budget text");
+      if (!renderer.captureCharFrame().includes("· Budget: 25% used")) throw new Error("Missing budget text or separator");
       if (!span || span.fg.buffer[0] !== 85 || span.fg.buffer[1] !== 85 || span.fg.buffer[2] !== 85) throw new Error("Host theme colour not applied");
     } finally { cleanup(); renderer.renderer.destroy(); }
   `], { cwd: import.meta.dir, stdout: "pipe", stderr: "pipe" })
