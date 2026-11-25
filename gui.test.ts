@@ -34,6 +34,7 @@ test("Desktop ignores late refreshes after switching sessions", async () => {
   }
   plugin.setup(ctx)
   expect(view.at).toBe("session.header")
+  expect(view.order).toBe(-10)
   const previousDocument = globalThis.document
   const element = () => ({ style: {} as any, attributes: {} as Record<string, string>, children: [] as any[], setAttribute(name: string, value: string) { this.attributes[name] = value }, append(...children: any[]) { this.children.push(...children) } })
   globalThis.document = { createElement: element, createElementNS: element } as any
@@ -42,6 +43,7 @@ test("Desktop ignores late refreshes after switching sessions", async () => {
   const [separator, svg, text, trailingSeparator] = button.children
   expect(separator.textContent).toBe("·")
   expect(separator.attributes["aria-hidden"]).toBe("true")
+  expect(button.children).toHaveLength(4)
   expect(trailingSeparator.textContent).toBe("·")
   expect(trailingSeparator.attributes["aria-hidden"]).toBe("true")
   const progress = svg.children[1]

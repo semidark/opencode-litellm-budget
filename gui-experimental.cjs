@@ -74,6 +74,7 @@ module.exports = { default: Plugin.define({
     })
     ctx.add(Slot, {
       at: "session.header",
+      order: -10,
       render(input) {
         const button = document.createElement("button")
         button.type = "button"
